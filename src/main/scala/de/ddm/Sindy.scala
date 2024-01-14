@@ -15,6 +15,10 @@ object Sindy {
   }
 
   def discoverINDs(inputs: List[String], spark: SparkSession): Unit = {
+    import spark.implicits._
+
+    inputs.map(input => readData(input, spark))
+
 
     // TODO
   }
