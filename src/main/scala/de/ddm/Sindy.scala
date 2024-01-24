@@ -30,13 +30,16 @@ object Sindy {
       })
       .reduce((dataSet1, dataSet2) => dataSet1 union dataSet2)
       .groupByKey(t => t._2)
-      .mapGroups{(key, iterator) =>
+      .mapGroups{(_, iterator) =>
         //(key, iterator)
         // (21062,Set((P_PARTKEY,21062), (O_ORDERKEY,21062), (O_CUSTKEY,21062), (L_PARTKEY,21062), (C_CUSTKEY,21062)))
         val set = iterator.map(_._1).toSet
 
-        (key, set.reduce((firstSet, secondSet) => firstSet.intersect(secondSet)))
+        (set.head, set.tail)
       }
+      .groupByKey(row => row._1)
+      .mapGroups((key, iter) =>
+        (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
       .filter(row => row._2.nonEmpty)
       .collect()
 
