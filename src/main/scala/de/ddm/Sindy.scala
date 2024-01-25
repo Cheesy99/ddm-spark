@@ -22,9 +22,9 @@ object Sindy {
 
     val result =
       inputs.map(input => readData(input, spark))
-        .map(inputTable => {
-          val columns = inputTable.columns
-          inputTable.flatMap(row => for (i <- columns.indices) yield (columns(i), row.getString(i)))
+        .map(table => {
+          val columns = table.columns
+          table.flatMap(row => for (i <- columns.indices) yield (columns(i), row.getString(i)))
         })
         .reduce((set1, set2) => set1 union set2)
         .groupByKey(t => t._2)
