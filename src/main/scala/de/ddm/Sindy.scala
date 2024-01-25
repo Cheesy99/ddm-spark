@@ -26,11 +26,11 @@ object Sindy {
           val columns = inputTable.columns
           inputTable.flatMap(row => for (i <- columns.indices) yield (columns(i), row.getString(i)))
         })
-        .reduce((dataSet1, dataSet2) => dataSet1 union dataSet2)
+        .reduce((set1, set2) => set1 union set2)
         .groupByKey(t => t._2)
         .mapGroups((_, iterator) => iterator.map(_._1).toSet)
-        .flatMap(attributeSet => attributeSet
-          .map(currentAttribute => (currentAttribute, attributeSet.filter(attribute => attribute != currentAttribute))))
+        .flatMap(Set => Set
+          .map(currentAttribute => (currentAttribute, Set.filter(attribute => !attribute.equals(currentAttribute)))))
         .groupByKey(row => row._1)
         .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
         .collect() // Here spark stops
