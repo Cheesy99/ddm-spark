@@ -28,7 +28,7 @@ object Sindy {
         })
         .reduce((dataSet1, dataSet2) => dataSet1 union dataSet2)
         .groupByKey(t => t._2)
-        .mapGroups((_, iterator) => (iterator.map(_._1).toSet))
+        .mapGroups((_, iterator) => iterator.map(_._1).toSet)
         .flatMap(attributeSet => attributeSet
           .map(currentAttribute => (currentAttribute, attributeSet.filter(attribute => attribute != currentAttribute))))
         .groupByKey(row => row._1)
@@ -39,7 +39,5 @@ object Sindy {
       .foreach(ind => if (ind._2.nonEmpty) println(ind._1 + " -> " + ind._2.mkString(", ")))
   }
 
-
-  
 
 }
