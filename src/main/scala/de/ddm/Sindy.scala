@@ -32,12 +32,10 @@ object Sindy {
         .flatMap(Set => Set
           .map(currentAttribute => (currentAttribute, Set.filter(attribute => !attribute.equals(currentAttribute)))))
         .groupByKey(row => row._1)
-        .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
+        .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((set1, set2) => set1.intersect(set2))))
         .collect() // Here spark stops
 
     result.sortBy(tuple => tuple._1)
       .foreach(IND => if (IND._2.nonEmpty) println(IND._1 + " -> " + IND._2.mkString(", ")))
   }
-
-
 }
