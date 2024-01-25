@@ -29,7 +29,7 @@ object Sindy {
         .groupByKey(t => t._2)
         .mapGroups((_, iterator) => iterator.map(_._1).toSet)
         .flatMap(Set => Set
-          .map(currentAttribute => (currentAttribute, Set.filter(attribute => !attribute.equals(currentAttribute))/*this find out who the inds are*/)))
+          .map(individualAttribute => (individualAttribute, Set.filter(attribute => !attribute.equals(individualAttribute)))))
         .groupByKey(row => row._1)
         .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((set1, set2) => set1.intersect(set2))))
         .collect() // Here spark stops
