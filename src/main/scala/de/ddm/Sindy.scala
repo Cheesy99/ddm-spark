@@ -35,7 +35,7 @@ object Sindy {
         .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
         .collect()
 
-    result.sortBy(IND => IND._1)
+    result.sortBy(tuple => tuple._1)
       .foreach(IND => if (IND._2.nonEmpty) println(IND._1 + " -> " + IND._2.mkString(", ")))
   }
 
