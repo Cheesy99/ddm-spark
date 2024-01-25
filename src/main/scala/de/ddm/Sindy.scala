@@ -33,7 +33,7 @@ object Sindy {
           .map(currentAttribute => (currentAttribute, attributeSet.filter(attribute => attribute != currentAttribute))))
         .groupByKey(row => row._1)
         .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
-        .collect()
+        .collect() // Here spark stops
 
     result.sortBy(tuple => tuple._1)
       .foreach(IND => if (IND._2.nonEmpty) println(IND._1 + " -> " + IND._2.mkString(", ")))
