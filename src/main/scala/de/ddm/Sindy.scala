@@ -21,35 +21,25 @@ object Sindy {
     import spark.implicits._
 
     val result =
-    inputs.map(input => readData(input, spark))
-      .map(inputTable => {
-        val columns = inputTable.columns
-        inputTable.flatMap(row => {
-          for (i <- columns.indices) yield (columns(i), row.getString(i))
+      inputs.map(input => readData(input, spark))
+        .map(inputTable => {
+          val columns = inputTable.columns
+          inputTable.flatMap(row => for (i <- columns.indices) yield (columns(i), row.getString(i)))
         })
-      })
-      .reduce((dataSet1, dataSet2) => dataSet1 union dataSet2)
-      .groupByKey(t => t._2)
-      .mapGroups{(_, iterator) =>
-        //(key, iterator)
-        // (21062,Set((P_PARTKEY,21062), (O_ORDERKEY,21062), (O_CUSTKEY,21062), (L_PARTKEY,21062), (C_CUSTKEY,21062)))
-        val set = iterator.map(_._1).toSet
+        .reduce((dataSet1, dataSet2) => dataSet1 union dataSet2)
+        .groupByKey(t => t._2)
+        .mapGroups((_, iterator) => (iterator.map(_._1).toSet))
+        .flatMap(attributeSet => attributeSet
+          .map(currentAttribute => (currentAttribute, attributeSet.filter(attribute => attribute != currentAttribute))))
+        .groupByKey(row => row._1)
+        .mapGroups((key, iter) => (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
+        .collect()
 
-        (set.head, set.tail)
-      }
-      .groupByKey(row => row._1)
-      .mapGroups((key, iter) =>
-        (key, iter.map(row => row._2).reduce((firstSet, secondSet) => firstSet.intersect(secondSet))))
-      .filter(row => row._2.nonEmpty)
-      .collect()
-
-
-
-      result.sortBy(ind => ind._1)
-        .foreach(ind => println(ind._1 + "<" + ind._2.mkString(", ")))
+    result.sortBy(ind => ind._1)
+      .foreach(ind => if (ind._2.nonEmpty) println(ind._1 + " -> " + ind._2.mkString(", ")))
   }
 
 
-    // TODO
+  
 
 }
