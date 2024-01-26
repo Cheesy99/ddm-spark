@@ -35,6 +35,6 @@ object Sindy {
         .collect() // Here spark stops
 
     result.sortBy(tuple => tuple._1)
-      .foreach(IND => if (IND._2.nonEmpty) println(IND._1 + " -> " + IND._2.mkString(", ")))
+      .foreach(IND => if (IND._2.nonEmpty) println(IND._1 + " -> " + IND._2.mkString(",")))
   }
 }
